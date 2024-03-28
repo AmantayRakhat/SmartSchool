@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sidebar with Icons</title>
+        <link
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+        />
+        <link href="/static/css/style.css" rel="stylesheet" />
+        <script
+            src="https://api-maps.yandex.ru/2.1/?apikey=9a2da435-eec3-4e6b-9321-cdf359e63bd2&lang=ru_RU"
+            type="text/javascript"
+        ></script>
+    </head>
+    <body>
+        <div class="d-flex" id="wrapper">
+            <!-- Sidebar -->
+            <div class="bg-light border-right" id="sidebar-wrapper">
+                <div class="sidebar-heading p-4 w-max">Ақылды мектеп</div>
+                <div class="list-group list-group-flush w-auto">
+                    <a
+                        href="/"
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-home"></i> Басы</a
+                    >
+                    <a
+                        href="/opencv"
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-cog"></i> Қауіпсіздік</a
+                    >
+                    <a
+                        href=""
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-user"></i> Жер сілкінісі</a
+                    >
+                </div>
+            </div>
+            <!-- /#sidebar-wrapper -->
+
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <h1 class="mt-4">Earthquake</h1>
+                <div id="map" style="width: 100%; height: 400px"></div>
+                <div id="page-content-wrapper">
+                    <h1 class="mt-4">Earthquake</h1>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-3 kvadratik">
+                                <h5>Умеренный</h5>
+                                <h6>
+                                    Уровень глобальной сейсмической активности
+                                </h6>
+                            </div>
+                            <div class="col-3 kvadratik">88</div>
+                            <div class="col-3 kvadratik">1014</div>
+                            <div class="col-3 kvadratik">6123</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /#page-content-wrapper -->
+        </div>
+        <!-- /#wrapper -->
+        <script></script>
+        <!-- Bootstrap core JavaScript -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="/static/js/main.js"></script>
+    </body>
+</html>

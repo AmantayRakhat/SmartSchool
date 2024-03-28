@@ -1,0 +1,35 @@
+#page-content-wrapper {
+    width: 80%; /* Ширина блока */
+    max-width: 960px; /* Максимальная ширина блока */
+    margin: 0 auto; /* Выравнивание блока по центру */
+    text-align: center; /* Центрирование текста по горизонтали внутри блока */
+    padding: 20px; /* Внутренние отступы для контента */
+}
+
+#page-content-wrapper {
+    text-align: center; /* Центрирование текста по горизонтали внутри блока */
+}
+.w-auto {
+    width: auto; /* Ширина блока */
+}
+
+.mt-4 {
+    margin-top: 4rem; /* Устанавливаем отступ сверху для текста */
+}
+.square {
+    width: 100%;
+    padding-top: 100%; /* Это для создания квадрата */
+    background-color: #ccc; /* Цвет квадрата */
+    margin-bottom: 15px; /* Отступ между квадратами */
+}
+.kvadratik {
+    width: 200px;
+    /* height: 100px; Высота квадратов */
+    padding: 8px;
+    margin-bottom: 15px; /* Отступ снизу */
+    background-color: #f8f9fa; /* Цвет фона квадратов */
+    border: 1px solid #dee2e6; /* Граница вокруг квадратов */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

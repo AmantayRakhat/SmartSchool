@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sidebar with Icons</title>
+        <link
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="./style.css" />
+    </head>
+    <style>
+        /* Стили для карточек устройств */
+        .card {
+            transition: transform 0.2s; /* Анимация */
+        }
+
+        .card:hover {
+            transform: scale(1.04); /* Увеличиваем карточку при наведении */
+        }
+
+        /* Стилизация переключателей */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2196f3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196f3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Округление переключателей */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+        .spacing {
+            min-height: 500px;
+        }
+        .status-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .temp-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .w-max {
+            width: max-content; /* Ширина блока */
+        }
+        .py-2 {
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+    </style>
+    <body>
+        <div class="d-flex" id="wrapper">
+            <!-- Sidebar -->
+            <div class="bg-light border-right" id="sidebar-wrapper">
+                <div class="sidebar-heading p-4 w-max">Ақылды мектеп</div>
+                <div class="list-group list-group-flush w-auto">
+                    <a
+                        href=""
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-home"></i> Басы</a
+                    >
+                    <a
+                        href="/opencv"
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-cog"></i> Қауіпсіздік</a
+                    >
+                    <a
+                        href="/earthquake"
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-user"></i> Жер сілкінісі</a
+                    >
+                </div>
+            </div>
+            <!-- /#sidebar-wrapper -->
+
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <div class="container-fluid">
+                    <h2 class="p-4">Басты бет</h2>
+                    <div class="status-wrapper">
+                        <div class="card col-4 m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    Сейсмическая активность
+                                </h5>
+                                <h5 class="card-title">Стабильная</h5>
+                            </div>
+                        </div>
+                        <div class="card col-4 m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    Система раннего предупреждения
+                                </h5>
+                                <h5 class="card-title">Активно</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <h1 class="p-4">Управление умным домом</h1>
+                    <div id="devices" class="row switch-wrapper p-4"></div>
+                    <!-- Контейнер для элементов умного дома -->
+                    <h1 class="p-4">Температура</h1>
+                    <div class="container-fluid">
+                        <div id="devices1" class="row temp-wrapper"></div>
+                        <div id="temp1" class="row temp-wrapper py-2"></div>
+                        <!-- Контейнер для элементов умного дома и ESP4 -->
+                    </div>
+                    <h1 class="p-4">Дала температурсы</h1>
+                    <div class="container-fluid">
+                        <div id="esp5Data" class="row"></div>
+                        <!-- Контейнер для карточек данных ESP5 -->
+                    </div>
+                </div>
+                <div style="min-height: 500px" class="spacing"></div>
+            </div>
+
+            <!-- /#page-content-wrapper -->
+        </div>
+        <!-- /#wrapper -->
+        <script>
+            // Функция для получения и отображения состояний устройств
+            async function fetchLightStatus() {
+                const response = await fetch("/light-status");
+                const data = await response.json();
+                const devicesContainer = document.getElementById("devices");
+                devicesContainer.innerHTML = ""; // Очищаем контейнер перед добавлением новых элементов
+
+                for (const [name, status] of Object.entries(data)) {
+                    // Создаем карточку для каждого устройства
+                    const card = document.createElement("div");
+                    card.className = "card col-3 m-2";
+                    card.innerHTML = `
+                <div class="card-body">
+                    <h5 class="card-title">${name}</h5>
+                    <label class="switch">
+                        <input type="checkbox" ${
+                            status ? "checked" : ""
+                        } onchange="toggleLight('${name}', this.checked ? 1 : 0)">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            `;
+                    devicesContainer.appendChild(card);
+                }
+            }
+
+            // Функция для изменения состояния устройства
+            async function toggleLight(name, status) {
+                await fetch("/toggle-light", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ name: name, status: status }),
+                });
+                fetchLightStatus(); // Обновляем состояния после изменения
+            }
+
+            async function fetchESP4Data() {
+                const response = await fetch("/esp4/status");
+                const data = await response.json();
+                const devicesContainer = document.getElementById("devices1");
+
+                // Создаем карточки для отображения данных ESP4
+                createCard("Температура", `${data.temp}°C`, "temp");
+                createCard("Влажность", `${data.vlazh}%`, "vlazh");
+                createCard(
+                    "Вентилятор",
+                    `${data.fen ? "Включен" : "Выключен"}`,
+                    "fen"
+                );
+                createCard(
+                    "Жылысуық",
+                    `${data.zhylysyqk ? "Включено" : "Выключено"}`,
+                    "zhylysyqk"
+                );
+                const tempContainer = document.getElementById("temp1");
+                // Проверяем, существует ли уже карточка настроек температуры
+                let tempSettingsCard =
+                    document.getElementById("tempSettingsCard");
+                if (!tempSettingsCard) {
+                    // Создаем карточку настроек температуры, если она не существует
+                    tempSettingsCard = document.createElement("div");
+                    tempSettingsCard.id = "tempSettingsCard";
+                    tempSettingsCard.className = "card";
+                    tempSettingsCard.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">Температурные настройки</h5>
+                <input type="number" id="maxTemp" placeholder="Максимальная температура" class="form-control my-2">
+                <input type="number" id="minTemp" placeholder="Минимальная температура" class="form-control my-2">
+                <button onclick="setESP4Temperature()" class="btn btn-primary">Изменить</button>
+            </div>
+        `;
+                    tempContainer.appendChild(tempSettingsCard);
+                }
+
+                // Заполняем поля ввода текущими значениями
+                document.getElementById("maxTemp").value = data.maxtemp;
+                document.getElementById("minTemp").value = data.mintemp;
+            }
+
+            // Функция для создания карточек
+            function createCard(title, value, id) {
+                const card = document.createElement("div");
+                card.className = "card col-2 m-2";
+                card.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${title}</h5>
+                <p id="${id}">${value}</p>
+            </div>
+        `;
+                document.getElementById("devices1").appendChild(card);
+            }
+
+            async function fetchESP5Data() {
+                try {
+                    const response = await fetch("/esp5/data");
+                    if (!response.ok) {
+                        throw new Error("Данные не найдены");
+                    }
+                    const data = await response.json();
+                    const esp5Container = document.getElementById("esp5Data"); // Убедитесь, что этот контейнер есть в вашем HTML
+
+                    // Список ключей и их человеко-читаемых названий
+                    const dataKeys = {
+                        co2: "CO2 (ppm)",
+                        temp: "Температура (°C)",
+                        vlazh: "Влажность (%)",
+                    };
+
+                    // Очистка контейнера перед добавлением новых карточек
+                    esp5Container.innerHTML = "";
+
+                    Object.keys(dataKeys).forEach((key) => {
+                        const value = data[key];
+                        const title = dataKeys[key];
+
+                        // Создание и добавление карточки
+                        const card = document.createElement("div");
+                        card.className = "card col-4 m-2";
+                        card.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${title}</h5>
+                        <p>${value}</p>
+                    </div>
+                `;
+                        esp5Container.appendChild(card);
+                    });
+                } catch (error) {
+                    console.error("Ошибка при получении данных ESP5:", error);
+                    // alert("Произошла ошибка при получении данных ESP5.");
+                }
+            }
+
+            async function setESP4Temperature() {
+                const maxTemp = document.getElementById("maxTemp").value;
+                const minTemp = document.getElementById("minTemp").value;
+
+                // Проверка на валидность введенных данных
+                if (!maxTemp || !minTemp) {
+                    alert(
+                        "Пожалуйста, введите корректные значения температур."
+                    );
+                    return;
+                }
+
+                try {
+                    const response = await fetch("/esp4/set-temperature", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            maxtemp: maxTemp,
+                            mintemp: minTemp,
+                        }),
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert("Температурные настройки успешно изменены.");
+                        // fetchESP4Data(); // Обновляем данные после изменения настроек
+                    } else {
+                        // Обработка ошибок, возвращаемых сервером
+                        alert(
+                            "Ошибка при изменении настроек: " +
+                                (data.error || "Неизвестная ошибка")
+                        );
+                    }
+                } catch (error) {
+                    // Обработка ошибок сети или JSON парсинга
+                    console.error(
+                        "Произошла ошибка при отправке данных:",
+                        error
+                    );
+                    alert(
+                        "Не удалось отправить данные. Проверьте консоль для деталей."
+                    );
+                }
+            }
+
+            // Вызываем функцию при загрузке страницы
+            window.onload = function () {
+                fetchLightStatus();
+                fetchESP4Data();
+                fetchESP5Data();
+            };
+        </script>
+        <!-- Bootstrap core JavaScript -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+</html>
