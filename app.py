@@ -134,7 +134,6 @@ def about1():
 def about2():
     return send_from_directory('static', 'earthquake.html')
 
-app = Flask(__name__)
 camera = cv2.VideoCapture(0)  # Используйте 0 для основной камеры
 
 # Загрузка предварительно обученной модели Haar Cascade
@@ -187,9 +186,6 @@ def verify():
     result = face_recognition(frame)
     return result
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 @app.route('/capture_face', methods=['POST'])
 def capture_face():
