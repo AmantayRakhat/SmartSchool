@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, send_from_directory, render_template
 import firebase_admin
 from flask_cors import CORS
-
+import time
 from firebase_admin import credentials, db
 
 from flask import Flask, render_template, Response, request, jsonify, send_from_directory
@@ -182,9 +182,21 @@ def video():
 def verify():
     success, frame = camera.read()
     if not success:
-        return "Ошибка захвата изображения"
+        return jsonify({'error': 'Ошибка захвата изображения'}), 500
+
     result = face_recognition(frame)
-    return result
+    if "Лицо идентифицировано как" in result:
+        # Если лицо успешно идентифицировано, устанавливаем esp1/door в 1
+        ref = db.reference('esp1/door')
+        ref.set(1)
+
+        # Задержка на 4 секунды перед установкой значения обратно в 0
+        time.sleep(4)
+        ref.set(0)
+
+        return result
+    else:
+        return result
 
 
 @app.route('/capture_face', methods=['POST'])
