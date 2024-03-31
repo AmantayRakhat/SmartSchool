@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sidebar with Icons</title>
+        <link
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+        />
+        <!-- <link
+            href="{{ url_for('static', filename='css/style.css') }}"
+            rel="stylesheet"
+        /> -->
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;
+                height: 100vh;
+                background-color: #f0f0f0;
+            }
+            .video-container, .faces-container {
+                flex: 1;
+                padding: 20px;
+                max-width: 50%;
+            }
+            .video-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .faces-container {
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            #videoElement {
+                width: 100%;
+                max-width: 640px;
+                border: 1px solid #ccc;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            button {
+                cursor: pointer;
+                padding: 10px 15px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                margin-top: 20px;
+            }
+            .face {
+                margin: 10px 0;
+                background-color: #fff;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                padding: 10px;
+                border-radius: 5px;
+            }
+            .add-face-form {
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="d-flex" id="wrapper">
+            <!-- Sidebar -->
+            <div class="bg-light border-right" id="sidebar-wrapper">
+                <div class="sidebar-heading p-4 w-max">Ақылды мектеп</div>
+                <div class="list-group list-group-flush w-auto">
+                    <a
+                        href="/"
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-home"></i> Басы</a
+                    >
+                    <a
+                        href=""
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-cog"></i> Қауіпсіздік</a
+                    >
+                    <a
+                        href="/earthquake"
+                        class="list-group-item list-group-item-action bg-light"
+                        ><i class="fas fa-user"></i> Жер сілкінісі</a
+                    >
+                </div>
+            </div>
+            <!-- /#sidebar-wrapper -->
+
+            <!-- Page Content -->
+            <div class="video-container">
+                <h2>Видеотрансляция</h2>
+                <img src="{{ url_for('video') }}" id="videoElement">
+                <button id="verifyButton">Верификация</button>
+                <!-- Элемент для отображения результата верификации -->
+                <div id="verificationResult" style="margin-top: 20px;"></div>
+            </div>    
+            <div class="faces-container">
+                <h2>Разрешенные лица</h2>
+                <div id="facesList">
+                    <!-- Список разрешенных лиц будет заполняться здесь -->
+                </div>
+                <div class="add-face-form">
+                    <h3>Добавить лицо</h3>
+                    <input type="text" id="faceName" placeholder="Имя">
+                    <button id="addFaceButton">Добавить</button>
+                </div>
+            </div>
+
+            <!-- /#page-content-wrapper -->
+        </div>
+        <!-- /#wrapper -->
+        <script>
+            document.getElementById('verifyButton').addEventListener('click', function() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/verify", true);
+                xhr.onreadystatechange = function() {
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        var verificationResultElement = document.getElementById('verificationResult');
+                        if (this.status === 200) {
+                            // Выводим сообщение о результате верификации
+                            verificationResultElement.textContent = "Результат верификации: " + this.responseText;
+                            verificationResultElement.style.color = "green"; // Устанавливаем цвет текста
+                        } else {
+                            // В случае ошибки отображаем сообщение об ошибке
+                            verificationResultElement.textContent = "Ошибка верификации: " + this.responseText;
+                            verificationResultElement.style.color = "red"; // Устанавливаем цвет текста
+                        }
+                    }
+                };
+                xhr.send();
+            });
+    
+            
+            // Здесь может быть код для динамического обновления списка разрешенных лиц
+                // Функция для захвата лица и сохранения
+            document.getElementById('addFaceButton').addEventListener('click', function() {
+                var xhr = new XMLHttpRequest();
+                var faceName = document.getElementById('faceName').value; // Получаем имя из поля ввода
+                var params = "faceName=" + encodeURIComponent(faceName);
+                xhr.open("POST", "/capture_face", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Указываем тип содержимого как URL-кодированные данные формы
+    
+                xhr.onreadystatechange = function() {
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        if (this.status === 200) {
+                            alert("Лицо успешно сохранено.");
+                            loadFacesList(); // Обновляем список лиц после добавления
+                        } else {
+                            alert("Ошибка: " + this.responseText);
+                        }
+                    }
+                };
+                xhr.send(params); // Отправляем запрос с именем
+            });
+            
+            // Функция для загрузки и отображения списка разрешенных лиц
+        function loadFacesList() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/get_faces", true);
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    var faces = JSON.parse(this.responseText);
+                    var facesList = document.getElementById('facesList');
+                    facesList.innerHTML = ''; // Очистка списка
+    
+                    faces.forEach(function(face) {
+                        var faceElement = document.createElement('div');
+                        faceElement.className = 'face';
+    
+                        // Создаем тег img для каждого изображения
+                        var img = document.createElement('img');
+                        img.src = '/faces/' + face; // Устанавливаем путь к изображению, используя маршрут Flask
+                        img.style.width = '100px'; // Установите размер изображения по желанию
+                        img.style.height = '100px'; // Установите размер изображения по желанию
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '5px';
+                        img.style.marginRight = '10px';
+    
+                        // Добавляем имя файла рядом с изображением
+                        var text = document.createTextNode(face.split('_')[0]); // Предполагается, что имя файла начинается с имени лица
+    
+                        faceElement.appendChild(img);
+                        faceElement.appendChild(text);
+                        facesList.appendChild(faceElement);
+                    });
+                } else {
+                    console.error("Ошибка при получении списка лиц");
+                }
+            }
+            xhr.send();
+        }
+    
+    
+            // Загружаем список лиц при загрузке страницы
+            window.onload = function() {
+                loadFacesList();
+            };
+        </script>
+        <!-- Bootstrap core JavaScript -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+</html>

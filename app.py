@@ -128,7 +128,7 @@ def set_esp7_humidity():
     
 @app.route('/opencv')
 def about1():
-    return send_from_directory('static', 'opencv.html')
+    return render_template('opencv.html')
 
 @app.route('/earthquake')
 def about2():
