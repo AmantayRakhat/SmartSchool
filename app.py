@@ -1,8 +1,14 @@
 from flask import Flask, jsonify, request, send_from_directory, render_template
 import firebase_admin
 from flask_cors import CORS
-
+import time
 from firebase_admin import credentials, db
+
+from flask import Flask, render_template, Response, request, jsonify, send_from_directory
+import cv2
+import os
+import numpy as np
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -122,11 +128,114 @@ def set_esp7_humidity():
     
 @app.route('/opencv')
 def about1():
-    return send_from_directory('static', 'opencv.html')
+    return render_template('opencv.html')
 
 @app.route('/earthquake')
 def about2():
     return send_from_directory('static', 'earthquake.html')
+
+camera = cv2.VideoCapture(0)  # Используйте 0 для основной камеры
+
+# Загрузка предварительно обученной модели Haar Cascade
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+def generate_frames():
+    while True:
+        success, frame = camera.read()  # Читаем кадр
+        if not success:
+            break
+        else:
+            faces = face_cascade.detectMultiScale(frame, 1.1, 4)
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+def face_recognition(frame):
+    # Предполагается, что в 'face_images/' хранятся изображения для сверки
+    faces_detected = face_cascade.detectMultiScale(frame, 1.1, 4)
+    for (x, y, w, h) in faces_detected:
+        roi_color = frame[y:y+h, x:x+w]
+        files = os.listdir('face_images/')
+        for file in files:
+            face_image = cv2.imread(f'face_images/{file}')
+            try:
+                # Сравнение с использованием гистограмм
+                hist1 = cv2.calcHist([roi_color], [0], None, [256], [0,256])
+                hist2 = cv2.calcHist([face_image], [0], None, [256], [0,256])
+                result = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
+                if result > 0.6:  # Порог сходства
+                    return f"Лицо идентифицировано как {file.split('.')[0]}"
+            except Exception as e:
+                print(e)
+        return "Лицо не идентифицировано"
+    return "Лицо не обнаружено"
+
+@app.route('/video')
+def video():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/verify', methods=['POST'])
+def verify():
+    success, frame = camera.read()
+    if not success:
+        return jsonify({'error': 'Ошибка захвата изображения'}), 500
+
+    result = face_recognition(frame)
+    if "Лицо идентифицировано как" in result:
+        # Если лицо успешно идентифицировано, устанавливаем esp1/door в 1
+        ref = db.reference('esp1/door')
+        ref.set(1)
+
+        # Задержка на 4 секунды перед установкой значения обратно в 0
+        time.sleep(4)
+        ref.set(0)
+
+        return result
+    else:
+        return result
+
+
+@app.route('/capture_face', methods=['POST'])
+def capture_face():
+    success, frame = camera.read()
+    if not success:
+        return jsonify({'error': 'Не удалось захватить изображение.'}), 500
+
+    faces = face_cascade.detectMultiScale(frame, 1.1, 4)
+    if len(faces) == 0:
+        return jsonify({'error': 'Лица не обнаружены.'}), 400
+
+    # Получаем имя из данных запроса
+    face_name = request.form.get('faceName', 'Unknown')  # Используем 'Unknown' как значение по умолчанию
+
+    save_path = 'face_images'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # Сохраняем каждое обнаруженное лицо с использованием предоставленного имени
+    for i, (x, y, w, h) in enumerate(faces):
+        face_img = frame[y:y+h, x:x+w]
+        file_name = f"{face_name}.jpg"  # Имя файла формируется из имени, предоставленного пользователем, и индекса лица
+        cv2.imwrite(os.path.join(save_path, file_name), face_img)
+
+    return jsonify({'message': f'Лица успешно сохранены под именем {face_name}.'}), 200
+
+@app.route('/get_faces')
+def get_faces():
+    faces = []
+    for filename in os.listdir('face_images'):
+        faces.append(filename)
+    return jsonify(faces)
+
+
+# Предполагая, что 'face_images' находится в корне проекта
+@app.route('/faces/<filename>')
+def send_face(filename):
+    return send_from_directory('face_images', filename)
 
 
 if __name__ == '__main__':
