@@ -13,11 +13,16 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
+
 # Инициализация Firebase
 cred = credentials.Certificate('key.json')
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://safetyschool-5bb16-default-rtdb.asia-southeast1.firebasedatabase.app'
+    'databaseURL': 'https://safetyschool-19925-default-rtdb.asia-southeast1.firebasedatabase.app'
 })
+
+# cred = credentials.RefreshToken('key.json')
+# default_app = firebase_admin.initialize_app(cred)
+
 # Пример функции для чтения данных из Firebase
 def read_data():
     ref = db.reference('/')
@@ -31,6 +36,84 @@ def index():
 @app.route('/')
 def serve_frontend():
     return send_from_directory('static', 'index.html')
+
+@app.route('/esp1/status', methods=['GET'])
+def get_esp1_status():
+    ref = db.reference('/esp1')  # Путь к данным esp1 в Firebase
+    data = ref.get()
+    if data is not None:
+        return jsonify(data), 200
+    else:
+        return jsonify({"error": "Data not found"}), 404
+
+@app.route('/toggle-terrorism', methods=['POST'])
+def toggle_terrorism():
+    terrorism_data = request.json
+    status1 = terrorism_data['status1']  # Получаем новое состояние (0 или 1)
+    status2 = terrorism_data['status2']
+    # Обновляем состояние дверей door и door1
+    ref_door = db.reference('esp1/door')
+    ref_door.set(status1)
+
+    ref_door1 = db.reference('esp1/door1')
+    ref_door1.set(status1)
+
+    ref_red = db.reference('esp1/red')
+    ref_red.set(status2)
+
+    ref_red1 = db.reference('esp1/red1')
+    ref_red1.set(status2)
+
+    return jsonify({"success": True, "door_status": status1, "red": status2}), 200
+
+@app.route('/esp2/data', methods=['GET'])
+def get_esp2_data():
+    ref = db.reference('/esp2')
+    data = ref.get()
+    if data is not None:
+        return jsonify(data), 200
+    else:
+        return jsonify({"error": "Data not found"}), 404
+
+# @app.route('/play-school-bell', methods=['POST'])
+# def play_school_bell():
+#     # Обновляем данные в esp2 для воспроизведения звонка
+#     ref = db.reference('/esp2')
+#     ref.update({
+#         'select': 1,    # Значение 2 соответствует файлу 001.mp3
+#         'playStop': 0   # 0 для воспроизведения
+#     })
+#     return jsonify({"success": True}), 200
+
+@app.route('/play-bell', methods=['POST'])
+def play_bell():
+    data = request.json
+    play = data.get('play')
+
+    if play:
+        # Установить первый аудиофайл (например, звонок) и запустить воспроизведение
+        ref_select = db.reference('/esp2/select')
+        ref_select.set(1)  # Устанавливаем первый трек (001.mp3)
+
+        ref_playStop = db.reference('/esp2/playStop')
+        ref_playStop.set(0)  # Включаем воспроизведение
+
+        return jsonify({"success": True, "message": "Школьный звонок включен"}), 200
+
+    return jsonify({"success": False, "message": "Не удалось включить звонок"}), 400
+
+# Добавляем новый маршрут для управления состоянием "Ескерту жүйесі"
+@app.route('/toggle-alarm', methods=['POST'])
+def toggle_alarm():
+    alarm_data = request.json
+    status = alarm_data['status']  # Получаем новое состояние (0 или 1)
+
+    # Обновляем состояние 'alarm' в Firebase
+    ref_alarm = db.reference('esp2/alarm')
+    ref_alarm.set(status)
+
+    return jsonify({"success": True, "alarm_status": status}), 200
+
 
 # Получение данных об освещении
 @app.route('/light-status', methods=['GET'])
@@ -73,33 +156,33 @@ def set_esp4_temperature():
     else:
         return jsonify({"error": "Invalid data"}), 400
 
-@app.route('/esp5/data', methods=['GET'])
-def get_esp5_data():
-    ref = db.reference('/esp5')
-    data = ref.get()
-    if data is not None:
-        # Возвращает данные в формате JSON
-        return jsonify(data), 200
-    else:
-        # Если данных нет, возвращает ошибку
-        return jsonify({"error": "Data not found"}), 404
+# @app.route('/esp5/data', methods=['GET'])
+# def get_esp5_data():
+#     ref = db.reference('/esp5')
+#     data = ref.get()
+#     if data is not None:
+#         # Возвращает данные в формате JSON
+#         return jsonify(data), 200
+#     else:
+#         # Если данных нет, возвращает ошибку
+#         return jsonify({"error": "Data not found"}), 404
     
-@app.route('/light-statusDala', methods=['GET'])
-def get_light_statusD():
-    ref = db.reference('/esp6')  # Путь к данным об освещении
-    light_status = ref.get()
-    return jsonify(light_status), 200
+# @app.route('/light-statusDala', methods=['GET'])
+# def get_light_statusD():
+#     ref = db.reference('/esp6')  # Путь к данным об освещении
+#     light_status = ref.get()
+#     return jsonify(light_status), 200
 
 # Изменение состояния освещения
-@app.route('/toggle-lightDala', methods=['POST'])
-def toggle_lightD():
-    light_data = request.json
-    light_name = light_data['name']  # Название света, например 'zharyq1'
-    light_status = light_data['status']  # Новое состояние света, например 0 или 1
+# @app.route('/toggle-lightDala', methods=['POST'])
+# def toggle_lightD():
+#     light_data = request.json
+#     light_name = light_data['name']  # Название света, например 'zharyq1'
+#     light_status = light_data['status']  # Новое состояние света, например 0 или 1
     
-    ref = db.reference(f'/esp6/{light_name}')
-    ref.set(light_status)
-    return jsonify({"success": True}), 200
+#     ref = db.reference(f'/esp6/{light_name}')
+#     ref.set(light_status)
+#     return jsonify({"success": True}), 200
 
 @app.route('/esp7/data', methods=['GET'])
 def get_esp7_data():

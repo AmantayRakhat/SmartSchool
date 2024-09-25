@@ -1,35 +1,66 @@
+/* Page Content Wrapper */
 #page-content-wrapper {
-    width: 80%; /* Ширина блока */
-    max-width: 960px; /* Максимальная ширина блока */
-    margin: 0 auto; /* Выравнивание блока по центру */
-    text-align: center; /* Центрирование текста по горизонтали внутри блока */
-    padding: 20px; /* Внутренние отступы для контента */
+    width: 80%; /* Reduced width for more compact content display */
+    max-width: 960px; /* Maximum width */
+    margin: 0 auto; /* Centering block */
+    text-align: center; /* Center text horizontally */
+    padding: 20px; /* Padding for the content */
 }
 
-#page-content-wrapper {
-    text-align: center; /* Центрирование текста по горизонтали внутри блока */
-}
+/* Auto Width Block */
 .w-auto {
-    width: auto; /* Ширина блока */
+    width: auto; /* Automatically adjust width based on content */
 }
 
+/* Margin Top */
 .mt-4 {
-    margin-top: 4rem; /* Устанавливаем отступ сверху для текста */
+    margin-top: 4rem; /* Margin-top of 4 rem units */
 }
+
+/* Square Blocks - Full Width */
 .square {
-    width: 100%;
-    padding-top: 100%; /* Это для создания квадрата */
-    background-color: #ccc; /* Цвет квадрата */
-    margin-bottom: 15px; /* Отступ между квадратами */
+    width: 100%; /* Full width */
+    padding-top: 100%; /* Maintain square ratio */
+    background-color: #e0e0e0; /* Updated background color for a modern look */
+    margin-bottom: 15px; /* Margin between squares */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
 }
+
+.square:hover {
+    background-color: #ccc; /* Darker background color on hover */
+}
+
+/* Kvadratik (Small Blocks) */
 .kvadratik {
-    width: 200px;
-    /* height: 100px; Высота квадратов */
-    padding: 8px;
-    margin-bottom: 15px; /* Отступ снизу */
-    background-color: #f8f9fa; /* Цвет фона квадратов */
-    border: 1px solid #dee2e6; /* Граница вокруг квадратов */
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    width: 200px; /* Fixed width */
+    padding: 12px; /* Increased padding for better spacing */
+    margin-bottom: 20px; /* Bottom margin */
+    background-color: #f9fafb; /* Slightly lighter background for modern look */
+    border: 1px solid #ced4da; /* Softer border color */
+    border-radius: 8px; /* Rounded corners for a cleaner design */
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    text-align: center; /* Center text */
+    transition: transform 0.2s ease, background-color 0.3s ease; /* Smooth hover effects */
+}
+
+/* Kvadratik Hover Effect */
+.kvadratik:hover {
+    background-color: #e9ecef; /* Slightly darker background on hover */
+    transform: translateY(-5px); /* Subtle lift effect on hover */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #page-content-wrapper {
+        width: 95%; /* Increase width for smaller screens */
+    }
+    .kvadratik {
+        width: 100%; /* Full width on smaller screens */
+    }
+    .square {
+        width: 100%; /* Full width for squares */
+        padding-top: 100%; /* Maintain square ratio */
+    }
 }

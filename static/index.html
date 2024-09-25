@@ -1,261 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Ақылды мектеп</title>
-        <link
-            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-            rel="stylesheet"
-        />
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="./style.css" />
-    </head>
-    <style>
-        .loading-spinner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            z-index: 9999;
-            font-size: 20px;
-            color: #333;
-        }
-        .card {
-            transition: transform 0.2s; /* Анимация */
-        }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ақылды мектеп</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<style>
+    /* Основные переменные для цветов */
+    :root {
+        --primary-bg: #2d3748; /* Темно-синий фон */
+        --nav-bg: #1a202c; /* Цвет меню */
+        --text-color: #e2e8f0; /* Цвет текста */
+        --accent-color: #63b3ed; /* Акцентный цвет */
+        --hover-bg: #4a5568; /* Цвет при наведении */
+        --border-color: #718096; /* Цвет границы */
+        --white-color: #ffffff; /* Белый цвет */
+    }
 
-        /* Стилизация переключателей */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
+    body {
+        background-color: var(--primary-bg);
+        color: var(--text-color);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh; /* Выравнивание по вертикали */
+        margin: 0;
+    }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .switch-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
+    /* Навигационное меню */
+    .navbar {
+        background-color: var(--nav-bg);
+        padding: 15px 30px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            -webkit-transition: 0.4s;
-            transition: 0.4s;
-        }
+    .navbar-brand {
+        color: var(--white-color);
+        font-size: 1.8rem;
+        font-weight: bold;
+        text-decoration: none;
+    }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            -webkit-transition: 0.4s;
-            transition: 0.4s;
-        }
+    .nav-item {
+        color: var(--text-color);
+        font-size: 1.2rem;
+        margin: 0 15px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
 
-        input:checked + .slider {
-            background-color: #2196f3;
-        }
+    .nav-item:hover {
+        color: var(--accent-color);
+    }
 
-        input:focus + .slider {
-            box-shadow: 0 0 1px #2196f3;
-        }
+    /* Карточки */
+    .card {
+        background-color: var(--nav-bg);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Центровка карточек */
+        justify-content: center;
+        text-align: center;
+    }
 
-        input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
-        }
+    .card:hover {
+        background-color: var(--hover-bg);
+        transform: translateY(-5px);
+    }
 
-        /* Округление переключателей */
-        .slider.round {
-            border-radius: 34px;
-        }
+    .card-title {
+        color: var(--white-color);
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
 
-        .slider.round:before {
-            border-radius: 50%;
-        }
-        .spacing {
-            min-height: 500px;
-        }
-        .status-wrapper {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-evenly;
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        .temp-wrapper {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        .w-max {
-            width: max-content; /* Ширина блока */
-        }
-        .py-2 {
-            padding-top: 4px;
-            padding-bottom: 4px;
-        }
-    </style>
-    <body>
-        <div class="flex" id="wrapper">
-            <div id="loadingSpinner" class="loading-spinner">Загрузка...</div>
+    .card p {
+        color: var(--text-color);
+        font-size: 1rem;
+    }
+    
 
-            <!-- Sidebar -->
-            <div class="bg-light border-right" id="sidebar-wrapper">
-                <div class="sidebar-heading p-4 w-max">Ақылды мектеп</div>
-                <div class="list-group list-group-flush w-auto">
-                    <a
-                        href=""
-                        class="list-group-item list-group-item-action bg-light"
-                        ><i class="fas fa-home"></i> Басы</a
-                    >
-                    <a
-                        href="/opencv"
-                        class="list-group-item list-group-item-action bg-light"
-                        ><i class="fas fa-cog"></i> Қауіпсіздік</a
-                    >
-                    <a
-                        href="/earthquake"
-                        class="list-group-item list-group-item-action bg-light"
-                        ><i class="fas fa-user"></i> Жер сілкінісі</a
-                    >
-                </div>
-            </div>
-            <!-- /#sidebar-wrapper -->
+    /* Основное содержимое */
+    #page-content-wrapper {
+        padding: 40px;
+        background-color: var(--primary-bg);
+        text-align: center; /* Центровка текста */
+        width: 100%;
+    }
 
-            <!-- Page Content -->
-            <div id="page-content-wrapper" class="bg-gray-200 w-full">
-                <div class="container-fluid">
-                    <h2 class="text-3xl font-bold text-center mb-6 p-4">
-                        Басты бет
-                    </h2>
-                    <div class="status-wrapper">
-                        <div class="card col-4 m-2">
-                            <div
-                                class="card-body flex justify-between items-center"
-                            >
-                                <div>
-                                    <h5 class="card-title">
-                                        Сейсмикалық белсенділік
-                                    </h5>
-                                    <h5 class="card-title text-green-500">
-                                        Тұрақты
-                                    </h5>
-                                </div>
-                                <img
-                                    src="/static/assets/seis.png"
-                                    class="w-12 h-12"
-                                />
-                            </div>
-                        </div>
-                        <div class="card col-4 m-2">
-                            <div
-                                class="card-body flex justify-between items-center"
-                            >
-                                <div>
-                                    <h5 class="card-title">
-                                        Ерте ескерту жүйесі
-                                    </h5>
-                                    <h5 class="card-title text-green-500">
-                                        Белсенді
-                                    </h5>
-                                </div>
-                                <img
-                                    src="/static/assets/early.png"
-                                    class="w-12 h-12"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <h1 class="text-3xl font-bold text-center mb-6 p-4">
-                        Ақылды үйді басқару
-                    </h1>
-                    <div
-                        id="devices"
-                        class="row switch-wrapper p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
-                    ></div>
-                    <!-- Контейнер для элементов умного дома -->
-                    <h1 class="text-3xl font-bold text-center mb-6 p-4">
-                        Температура
-                    </h1>
-                    <div class="container-fluid">
-                        <div
-                            id="devices1"
-                            class="row temp-wrapper grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-                        ></div>
-                        <div id="temp1" class="row temp-wrapper py-2"></div>
-                        <!-- Контейнер для элементов умного дома и ESP4 -->
-                    </div>
-                    <h1 class="text-3xl font-bold text-center mb-6 p-4">
-                        Дала температурсы
-                    </h1>
-                    <div class="container-fluid">
-                        <div
-                            id="esp5Data"
-                            class="row grid grid-cols-1 sm:grid-cols-2 gap-4"
-                        ></div>
+    h1, h2 {
+        color: var(--accent-color);
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-                        <!-- Контейнер для карточек данных ESP5 -->
-                    </div>
-                    <h1 class="text-3xl font-bold text-center mb-6 p-4">
-                        Дала жарығы
-                    </h1>
-                    <div class="container-fluid">
-                        <div
-                            id="esp6Data"
-                            class="row p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-                        ></div>
-                        <!-- Контейнер для карточек данных ESP6 -->
-                    </div>
-                    <h1 class="text-3xl font-bold text-center mb-6 p-4">
-                        Дала көрсеткіштері
-                    </h1>
-                    <div class="container-fluid">
-                        <div
-                            id="esp7Data"
-                            class="row grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-                        ></div>
-                        <div id="hum1" class="row temp-wrapper py-2"></div>
-                        <!-- Контейнер для карточек данных ESP7 -->
-                    </div>
-                </div>
-                <div style="min-height: 500px" class="spacing"></div>
-            </div>
+    h1 {
+        font-size: 2.8rem;
+    }
 
-            <!-- /#page-content-wrapper -->
+    h2 {
+        font-size: 2.2rem;
+    }
+
+    /* Пример сетки */
+    .grid {
+        display: grid;
+        gap: 20px;
+        justify-content: center; /* Центровка контента */
+    }
+
+    .grid-cols-1 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-cols-5 {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .temp-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    .status-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<body>
+    <!-- Верхнее меню -->
+    <div class="navbar">
+        <a href="#" class="navbar-brand">Ақылды мектеп</a>
+        <div class="d-flex">
+            <a href="#" class="nav-item">Басы</a>
+            <a href="/opencv" class="nav-item">Қауіпсіздік</a>
+            <a href="/earthquake" class="nav-item">Жер сілкінісі</a>
         </div>
-        <!-- /#wrapper -->
+    </div>
+
+    <!-- Основное содержимое -->
+    <div id="page-content-wrapper">
+        <!-- Добавьте это внутри <div id="page-content-wrapper"> -->
+
+        <h1>Басты бет</h1>
+        
+        <button id="school-bell-button" class="btn btn-primary m-4">Мектеп қоңырауы</button>
+
+        <div class="status-wrapper">
+            <!-- <div class="card col-4 m-2">
+                <div class="card-body flex justify-between items-center">
+                    <div>
+                        <h5 class="card-title">Сейсмикалық белсенділік</h5>
+                        <h5 class="card-title text-green-500">Тұрақты</h5>
+                    </div>
+                    <img src="/static/assets/seis.png" class="w-12 h-12" />
+                </div>
+            </div> -->
+
+            <div class="card col-4 m-2">
+                <div class="card-body flex justify-between items-center">
+                    <div>
+                        <h5 class="card-title">Сейсмикалық белсенділік</h5>
+                        <h5 id="seismic-status" class="card-title text-green-500">Тұрақты</h5>
+                    </div>
+                    <img src="/static/assets/seis.png" class="w-12 h-12" />
+                </div>
+            </div>
+            
+            <!-- <div class="card col-4 m-2">
+                <div class="card-body flex justify-between items-center">
+                    <div>
+                        <h5 class="card-title">Ерте ескерту жүйесі</h5>
+                        <h5 class="card-title text-green-500">Қосулы</h5>
+                    </div>
+                    <img src="/static/assets/early.png" class="w-12 h-12" />
+                </div>
+            </div> -->
+
+            <div class="card col-4 m-2 cursor-pointer" id="early-warning-card">
+                <div class="card-body flex justify-between items-center">
+                    <div>
+                        <h5 class="card-title">Ескерту жүйесі</h5>
+                        <h5 id="early-warning-status" class="card-title text-red-500">Off</h5>
+                    </div>
+                    <img src="/static/assets/early.png" class="w-12 h-12" />
+                </div>
+            </div>
+            
+            <div class="card col-4 m-2 cursor-pointer" id="terrorism-card">
+                <div class="card-body flex justify-between items-center">
+                    <div>
+                        <h5 class="card-title">Төтенше жағдай</h5>
+                        <h5 id="terrorism-status" class="card-title text-red-500">Off</h5>
+                    </div>
+                    <img src="/static/assets/danger.png" class="w-12 h-12" />
+                </div>
+            </div>
+            
+              
+        </div>
+
+     
+        <h2>Ақылды мектепті басқару</h2>
+
+        <div id="devices" class="row switch-wrapper p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
+
+        <h2>Температура</h2>
+
+        <div id="devices1" class="row temp-wrapper grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        <div id="temp1" class="row temp-wrapper py-2"></div>
+
+        <h2>Жылыжай көрсеткіштері</h2>
+
+        <div id="esp7Data" class="row grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <div id="hum1" class="row temp-wrapper py-2"></div>
+    </div>
+
+    <!-- Скрипты для логики (не изменено) -->
         <script>
             function replaceName(originalName) {
-                return originalName.replace(/zharyq/gi, "Жарық ");
+                // return originalName.replace(/zharyq/gi, "Жарық ");
+                if(originalName=="zharyq10")
+                return originalName.replace(/zharyq10/gi, "Жарық 2");
+            else if(originalName=="zharyq11")
+            return originalName.replace(/zharyq11/gi, "Жарық 3");
+            else if(originalName=="zharyq12")
+            return originalName.replace(/zharyq12/gi, "Жарық 4");
+            else if(originalName=="zharyq13")
+            return originalName.replace(/zharyq13/gi, "Жарық 5");
+            else if(originalName=="zharyq14")
+            return originalName.replace(/zharyq14/gi, "Жарық 6");
+            else if(originalName=="zharyq15")
+            return originalName.replace(/zharyq15/gi, "Жарық 7");
+            else if(originalName=="zharyq2")
+            return originalName.replace(/zharyq2/gi, "Жарық 8");
+            else if(originalName=="zharyq3")
+            return originalName.replace(/zharyq3/gi, "Жарық 9");
+            else if(originalName=="zharyq4")
+            return originalName.replace(/zharyq4/gi, "Жарық 10");
+            else if(originalName=="zharyq5")
+            return originalName.replace(/zharyq5/gi, "Жарық 11");
+            else if(originalName=="zharyq6")
+            return originalName.replace(/zharyq6/gi, "Жарық 12");
+            else if(originalName=="zharyq7")
+            return originalName.replace(/zharyq7/gi, "Жарық 13");
+            else if(originalName=="zharyq8")
+            return originalName.replace(/zharyq8/gi, "Жарық 14");
+            else if(originalName=="zharyq9")
+            return originalName.replace(/zharyq9/gi, "Жарық 15");
+        else
+        return originalName.replace(/zharyq/gi, "Жарық ");
             }
             // Функция для получения и отображения состояний устройств
             async function fetchLightStatus() {
@@ -312,50 +333,257 @@
                 fetchLightStatus(); // Update the statuses after changing
             }
 
-            async function fetchESP4Data() {
-                const response = await fetch("/esp4/status");
-                const data = await response.json();
-                const devicesContainer = document.getElementById("devices1");
 
-                // Создаем карточки для отображения данных ESP4
-                createCard(
-                    "Температура",
-                    `${data.temp}°C`,
-                    "temp",
-                    "/static/assets/temp.png",
-                    "devices1"
-                );
-                createCard(
-                    "Ылғалдылық",
-                    `${data.vlazh} %`,
-                    "vlazh",
-                    "/static/assets/humi.png",
-                    "devices1"
-                );
-                createCard(
-                    "Вентилятор",
-                    `${data.fen ? "Қосылған" : "Өшірулі"}`,
-                    "fen",
-                    "/static/assets/fan.png",
-                    "devices1"
-                );
-                createCard(
-                    "Жылысуық",
-                    `${data.zhylysyqk ? "Қосылған" : "Өшірулі"}`,
-                    "zhylysyqk",
-                    "/static/assets/cold.png",
-                    "devices1"
-                );
-                const tempContainer = document.getElementById("temp1");
-                // Проверяем, существует ли уже карточка настроек температуры
-                let tempSettingsCard =
-                    document.getElementById("tempSettingsCard");
-                if (!tempSettingsCard) {
-                    // Создаем карточку настроек температуры, если она не существует
-                    tempSettingsCard = document.createElement("div");
-                    tempSettingsCard.id = "tempSettingsCard";
-                    tempSettingsCard.className = "card";
-                    tempSettingsCard.innerHTML = `
+            document.getElementById("terrorism-card").onclick = function() {
+    // Получаем текущее состояние дверей из Firebase
+    fetch('/esp1/status')
+        .then(response => response.json())
+        .then(data => {
+            const currentStatus = data.door;  // Предполагается, что данные дверей хранятся в поле "door"
+            const ledstatus = data.red;
+            const newStatus = currentStatus === 1 ? 0 : 0;  // Переключаем статус (0 или 1)
+            const newledStatus = ledstatus === 1 ? 0 : 1
+            // Отправляем запрос на сервер для изменения состояния дверей
+            fetch('/toggle-terrorism', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status1: newStatus,
+                    status2: newledStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Состояние дверей изменено:", data);
+                // Обновляем текст статуса в карточке
+                const statusElement = document.getElementById("terrorism-status");
+                statusElement.textContent = newledStatus === 1 ? "On" : "Off";
+                statusElement.className = newledStatus === 1 ?  "card-title text-green-500" : "card-title text-red-500";
+            })
+            .catch(error => console.error('Ошибка:', error));
+        })
+        .catch(error => console.error('Ошибка получения состояния дверей:', error));
+};
+
+async function fetchESP2Data() {
+    const response = await fetch('/esp2/data');
+    const data = await response.json();
+
+    console.log("Полученные данные из Firebase:", data);  // Отладочный вывод
+
+    const seismicStatusElement = document.getElementById('seismic-status');
+    // Проверяем наличие данных gyro
+    if (data && data.gyro !== undefined) {
+        if (data.gyro === 1) {
+            seismicStatusElement.textContent = 'Тұрақсыз';
+            seismicStatusElement.className = 'card-title text-red-500';
+        } else {
+            seismicStatusElement.textContent = 'Тұрақты';
+            seismicStatusElement.className = 'card-title text-green-500';
+        }
+    } else {
+        console.error("Данные gyro не найдены в ответе:", data);  // Сообщение об ошибке
+    }
+}
+
+
+
+    // document.getElementById('school-bell-button').onclick = function() {
+    //     fetch('/play-school-bell', {
+    //         method: 'POST'
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if(data.success) {
+    //             alert('Мектеп қоңырауы ойнатылды.');
+    //         } else {
+    //             alert('Қате пайда болды.');
+    //         }
+    //     })
+    //     .catch(error => console.error('Ошибка:', error));
+    // };
+
+document.getElementById('school-bell-button').addEventListener('click', function() {
+    playSchoolBell();
+});
+
+document.getElementById('school-bell-button').onclick = function() {
+    fetch('/play-bell', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            play: true  // Отправляем команду на включение звонка
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            alert('Мектеп қоңырауы қосылды.');
+        } else {
+            alert('Қате пайда болды.');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Серверге сұрау жіберу кезінде қате пайда болды.');
+    });
+};
+
+document.getElementById("early-warning-card").onclick = function() {
+    // Получаем текущее состояние alarm из Firebase
+    fetch('/esp2/data')
+        .then(response => response.json())
+        .then(data => {
+            const currentStatus = data.alarm;  // Предполагается, что данные об alarm хранятся в поле "alarm"
+            const newStatus = currentStatus === 1 ? 0 : 1;  // Переключаем статус (0 или 1)
+
+            // Отправляем запрос на сервер для изменения состояния alarm
+            fetch('/toggle-alarm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Состояние alarm изменено:", data);
+
+                // Обновляем текст статуса в карточке
+                const statusElement = document.getElementById("early-warning-status");
+                statusElement.textContent = newStatus === 1 ? "On" : "Off";
+                statusElement.className = newStatus === 1 ? "card-title text-green-500" : "card-title text-red-500";
+            })
+            .catch(error => console.error('Ошибка:', error));
+        })
+        .catch(error => console.error('Ошибка получения состояния alarm:', error));
+};
+
+// async function updateEarlyWarningStatus() {
+//     // Получаем данные о статусе аудио из Firebase (например, по полю /playStop)
+//     const response = await fetch('/esp2/data');
+//     const data = await response.json();
+//     const warningStatusElement = document.getElementById('early-warning-status');
+
+//     // Проверяем значение playStop или другой переменной, которая отвечает за воспроизведение
+//     if (data.playStop === 0) {
+//         warningStatusElement.textContent = 'Қосылды';  // Если аудио играет
+//         warningStatusElement.className = 'card-title text-green-500';
+//     } else {
+//         warningStatusElement.textContent = 'Өшірулі';  // Если аудио остановлено
+//         warningStatusElement.className = 'card-title text-red-500';
+//     }
+// }
+
+
+// // Функция для отображения уведомления
+// function showNotification(message, isError = false) {
+//     const notificationElement = document.createElement('div');
+//     notificationElement.className = `notification ${isError ? 'error' : 'success'}`;
+//     notificationElement.textContent = message;
+    
+//     document.body.appendChild(notificationElement);
+
+//     // Удаляем уведомление через 5 секунд
+//     setTimeout(() => {
+//         notificationElement.remove();
+//     }, 5000);
+// }
+
+async function fetchESP4Data() {
+    const response = await fetch("/esp4/status");
+    const data = await response.json();
+    
+    // Очищаем контейнер перед добавлением новых данных
+    const devicesContainer = document.getElementById("devices1");
+    devicesContainer.innerHTML = ""; // Очищаем содержимое контейнера
+    
+    // Создаем карточки для отображения данных ESP4
+    createCard(
+        "Температура",
+        `${data.temp}°C`,
+        "temp",
+        "/static/assets/temp.png",
+        "devices1"
+    );
+    createCard(
+        "Ылғалдылық",
+        `${data.vlazh} %`,
+        "vlazh",
+        "/static/assets/humi.png",
+        "devices1"
+    );
+    createCard(
+        "Вентилятор",
+        `${data.fen ? "Қосылды" : "Өшірулі"}`,
+        "fen",
+        "/static/assets/fan.png",
+        "devices1"
+    );
+    createCard(
+        "Жылысуық",
+        `${data.zhylysyqk ? "Қосылды" : "Өшірулі"}`,
+        "zhylysyqk",
+        "/static/assets/cold.png",
+        "devices1"
+    );
+        //         const tempContainer = document.getElementById("temp1");
+        //         // Проверяем, существует ли уже карточка настроек температуры
+        //         let tempSettingsCard =
+        //             document.getElementById("tempSettingsCard");
+        //         if (!tempSettingsCard) {
+        //             // Создаем карточку настроек температуры, если она не существует
+        //             tempSettingsCard = document.createElement("div");
+        //             tempSettingsCard.id = "tempSettingsCard";
+        //             tempSettingsCard.className = "card";
+        //             tempSettingsCard.innerHTML = `
+        //     <div class="card-body">
+        //         <h5 class="card-title">Температура параметрлері</h5>
+        //         <input type="number" id="maxTemp" placeholder="Максималды температура" class="form-control my-2">
+        //         <input type="number" id="minTemp" placeholder="Минималды температура" class="form-control my-2">
+        //         <button onclick="setESP4Temperature()" class="btn btn-primary">Өзгерту</button>
+        //     </div>
+        // `;
+        //             tempContainer.appendChild(tempSettingsCard);
+        //         }
+
+        //         // Заполняем поля ввода текущими значениями
+        //         document.getElementById("maxTemp").value = data.maxtemp;
+        //         document.getElementById("minTemp").value = data.mintemp;
+            }
+
+function createCard(title, value, id, path, container) {
+    const card = document.createElement("div");
+    card.className = "bg-white rounded-xl shadow-md overflow-hidden m-4";
+    card.innerHTML = `
+        <div class="p-4">
+            <img src="${path}" class="w-8 h-8" >
+            <h5 class="text-lg font-semibold text-gray-700">${title}</h5>
+            <p class="text-sm text-gray-600" id="${id}">${value}</p>
+        </div>
+    `;
+    document.getElementById(container).appendChild(card);
+}
+async function fetchESP4TempSettings() {
+    const response = await fetch("/esp4/status");
+    const data = await response.json();
+    
+    const tempContainer = document.getElementById("temp1");
+
+    // Проверяем, существует ли уже карточка настроек температуры
+    let tempSettingsCard = document.getElementById("tempSettingsCard");
+    if (!tempSettingsCard) {
+        // Создаем карточку настроек температуры, если она не существует
+        tempSettingsCard = document.createElement("div");
+        tempSettingsCard.id = "tempSettingsCard";
+        tempSettingsCard.className = "card";
+        tempSettingsCard.innerHTML = `
             <div class="card-body">
                 <h5 class="card-title">Температура параметрлері</h5>
                 <input type="number" id="maxTemp" placeholder="Максималды температура" class="form-control my-2">
@@ -363,58 +591,118 @@
                 <button onclick="setESP4Temperature()" class="btn btn-primary">Өзгерту</button>
             </div>
         `;
-                    tempContainer.appendChild(tempSettingsCard);
-                }
+        tempContainer.appendChild(tempSettingsCard);
+    }
 
-                // Заполняем поля ввода текущими значениями
-                document.getElementById("maxTemp").value = data.maxtemp;
-                document.getElementById("minTemp").value = data.mintemp;
-            }
+    // Заполняем поля ввода текущими значениями
+    document.getElementById("maxTemp").value = data.maxtemp;
+    document.getElementById("minTemp").value = data.mintemp;
+}
 
-            function createCard(title, value, id, path, container) {
-                const card = document.createElement("div");
-                card.className =
-                    "bg-white rounded-xl shadow-md overflow-hidden m-4";
-                card.innerHTML = `
-        <div class="p-4">
-            <img src="${path}" class="w-8 h-8" >
-            <h5 class="text-lg font-semibold text-gray-700">${title}</h5>
-            <p class="text-sm text-gray-600" id="${id}">${value}</p>
-        </div>
-    `;
-                document.getElementById(container).appendChild(card);
-            }
 
-            async function fetchESP5Data() {
-                try {
-                    const response = await fetch("/esp5/data");
-                    if (!response.ok) {
-                        throw new Error("Данные не найдены");
-                    }
-                    const data = await response.json();
-                    const esp5Container = document.getElementById("esp5Data"); // Убедитесь, что этот контейнер есть в вашем HTML
+    //         async function fetchESP4Data() {
+    //             const response = await fetch("/esp4/status");
+    //             const data = await response.json();
+    //             const devicesContainer = document.getElementById("devices1");
 
-                    // Список ключей и их человеко-читаемых названий
+    //             // Создаем карточки для отображения данных ESP4
+    //             createCard(
+    //                 "Температура",
+    //                 `${data.temp}°C`,
+    //                 "temp",
+    //                 "/static/assets/temp.png",
+    //                 "devices1"
+    //             );
+    //             createCard(
+    //                 "Ылғалдылық",
+    //                 `${data.vlazh} %`,
+    //                 "vlazh",
+    //                 "/static/assets/humi.png",
+    //                 "devices1"
+    //             );
+    //             createCard(
+    //                 "Вентилятор",
+    //                 `${data.fen ? "Қосылған" : "Өшірулі"}`,
+    //                 "fen",
+    //                 "/static/assets/fan.png",
+    //                 "devices1"
+    //             );
+    //             createCard(
+    //                 "Жылысуық",
+    //                 `${data.zhylysyqk ? "Қосылған" : "Өшірулі"}`,
+    //                 "zhylysyqk",
+    //                 "/static/assets/cold.png",
+    //                 "devices1"
+    //             );
+    //             const tempContainer = document.getElementById("temp1");
+    //             // Проверяем, существует ли уже карточка настроек температуры
+    //             let tempSettingsCard =
+    //                 document.getElementById("tempSettingsCard");
+    //             if (!tempSettingsCard) {
+    //                 // Создаем карточку настроек температуры, если она не существует
+    //                 tempSettingsCard = document.createElement("div");
+    //                 tempSettingsCard.id = "tempSettingsCard";
+    //                 tempSettingsCard.className = "card";
+    //                 tempSettingsCard.innerHTML = `
+    //         <div class="card-body">
+    //             <h5 class="card-title">Температура параметрлері</h5>
+    //             <input type="number" id="maxTemp" placeholder="Максималды температура" class="form-control my-2">
+    //             <input type="number" id="minTemp" placeholder="Минималды температура" class="form-control my-2">
+    //             <button onclick="setESP4Temperature()" class="btn btn-primary">Өзгерту</button>
+    //         </div>
+    //     `;
+    //                 tempContainer.appendChild(tempSettingsCard);
+    //             }
 
-                    createCard(
-                        "CO2",
-                        `${data.ppm} ppm`,
-                        "co2",
-                        "/static/assets/co2.png",
-                        "esp5Data"
-                    );
-                    createCard(
-                        "Температура",
-                        `${data.temp}°C`,
-                        "temp",
-                        "/static/assets/temp.png",
-                        "esp5Data"
-                    );
-                } catch (error) {
-                    console.error("Ошибка при получении данных ESP5:", error);
-                    // alert("Произошла ошибка при получении данных ESP5.");
-                }
-            }
+    //             // Заполняем поля ввода текущими значениями
+    //             document.getElementById("maxTemp").value = data.maxtemp;
+    //             document.getElementById("minTemp").value = data.mintemp;
+    //         }
+
+    //         function createCard(title, value, id, path, container) {
+    //             const card = document.createElement("div");
+    //             card.className =
+    //                 "bg-white rounded-xl shadow-md overflow-hidden m-4";
+    //             card.innerHTML = `
+    //     <div class="p-4">
+    //         <img src="${path}" class="w-8 h-8" >
+    //         <h5 class="text-lg font-semibold text-gray-700">${title}</h5>
+    //         <p class="text-sm text-gray-600" id="${id}">${value}</p>
+    //     </div>
+    // `;
+    //             document.getElementById(container).appendChild(card);
+    //         }
+
+            // async function fetchESP5Data() {
+            //     try {
+            //         const response = await fetch("/esp5/data");
+            //         if (!response.ok) {
+            //             throw new Error("Данные не найдены");
+            //         }
+            //         const data = await response.json();
+            //         const esp5Container = document.getElementById("esp5Data"); // Убедитесь, что этот контейнер есть в вашем HTML
+
+            //         // Список ключей и их человеко-читаемых названий
+
+            //         createCard(
+            //             "CO2",
+            //             `${data.ppm} ppm`,
+            //             "co2",
+            //             "/static/assets/co2.png",
+            //             "esp5Data"
+            //         );
+            //         createCard(
+            //             "Температура",
+            //             `${data.temp}°C`,
+            //             "temp",
+            //             "/static/assets/temp.png",
+            //             "esp5Data"
+            //         );
+            //     } catch (error) {
+            //         console.error("Ошибка при получении данных ESP5:", error);
+            //         // alert("Произошла ошибка при получении данных ESP5.");
+            //     }
+            // }
 
             async function setESP4Temperature() {
                 const maxTemp = document.getElementById("maxTemp").value;
@@ -462,86 +750,65 @@
                     );
                 }
             }
-            async function fetchEsp6LightStatus() {
-                const response = await fetch("/light-statusDala");
-                const data = await response.json();
-                const devicesContainer = document.getElementById("esp6Data");
-                devicesContainer.innerHTML = ""; // Очищаем контейнер перед добавлением новых элементов
 
-                for (const [name, statusValue] of Object.entries(data)) {
-                    const currentStatus = statusValue === 1;
-                    const displayName = replaceName(name);
-
-                    const card = document.createElement("div");
-                    card.id = `card-${name}`;
-                    card.className = `cursor-pointer p-4 rounded-lg shadow-md overflow-hidden transition duration-150 ease-in-out ${
-                        currentStatus ? "bg-white" : "bg-gray-700 text-white"
-                    }`;
-                    card.onclick = function () {
-                        // Visual feedback for click
-                        card.classList.add("opacity-50");
-                        setTimeout(
-                            () => card.classList.remove("opacity-50"),
-                            200
-                        );
-                        // Toggle the light status
-                        toggleLightDala(name, !statusValue);
-                    };
-                    card.innerHTML = `
-        <div class="flex justify-between items-center">
-            <img src="/static/assets/lamp.png" class="w-8 h-8" >
-            <h5 class="text-lg font-semibold">${displayName}</h5>
-            <p class="status-text ${
-                currentStatus ? "text-green-500" : "text-red-500"
-            }">${currentStatus ? "On" : "Off"}</p>
-        </div>
-    `;
-                    devicesContainer.appendChild(card);
-                }
-            }
-            async function toggleLightDala(name, currentStatus) {
-                const statusValue = currentStatus ? 1 : 0;
-                await fetch("/toggle-lightDala", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        status: statusValue,
-                    }), // Send the inverted status
-                });
-                fetchEsp6LightStatus(); // Update the statuses after changing
-            }
+        //обновленная версия 
             async function fetchESP7Data() {
-                const response = await fetch("/esp7/data");
-                const data = await response.json();
-                const devicesContainer = document.getElementById("esp7Data");
-                devicesContainer.innerHTML = "";
-                // Создаем карточки для отображения данных ESP4
-                createCard(
-                    "Температура",
-                    `${data.temp}°C`,
-                    "temp",
-                    "/static/assets/temp.png",
-                    "esp7Data"
-                );
-                createCard(
-                    "Ылғалдылық",
-                    `${data.vlazh} %`,
-                    "vlazh",
-                    "/static/assets/humi.png",
-                    "esp7Data"
-                );
-                createCard(
-                    "Топырақ ылғалдылығы",
-                    `${data.datchikPochvy}`,
-                    "pochva",
-                    "/static/assets/soil.png",
-                    "esp7Data"
-                );
+    const response = await fetch("/esp7/data");
+    const data = await response.json();
+    
+    // Очищаем контейнер перед добавлением новых данных
+    const devicesContainer = document.getElementById("esp7Data");
+    devicesContainer.innerHTML = ""; // Очищаем содержимое контейнера
 
-                const humContainer = document.getElementById("hum1");
+    // Создаем карточки для отображения данных ESP7
+    createCard(
+        "Температура",
+        `${data.temp}°C`,
+        "temp7",
+        "/static/assets/temp.png",
+        "esp7Data"
+    );
+    createCard(
+        "Ылғалдылық",
+        `${data.vlazh} %`,
+        "vlazh7",
+        "/static/assets/humi.png",
+        "esp7Data"
+    );
+    createCard(
+        "Топырақ ылғалдылығы",
+        `${data.datchikPochvy}`,
+        "pochva7",
+        "/static/assets/soil.png",
+        "esp7Data"
+    );
+
+        //         const humContainer = document.getElementById("hum1");
+        //         let humSettingsCard =
+        //             document.getElementById("humSettingsCard");
+        //         if (!humSettingsCard) {
+        //             humSettingsCard = document.createElement("div");
+        //             humSettingsCard.id = "humSettingsCard";
+        //             humSettingsCard.className = "card";
+        //             humSettingsCard.innerHTML = `
+        //     <div class="card-body">
+        //         <h5 class="card-title">Ылғалдылық параметрлері</h5>
+        //         <input type="number" id="maxHum" placeholder="Максималды ылғалдылық" class="form-control my-2">
+        //         <input type="number" id="minHum" placeholder="Минималды ылғалдылық" class="form-control my-2">
+        //         <button onclick="setESP7Humidity()" class="btn btn-primary">Өзгерту</button>
+        //     </div>
+        // `;
+        //             humContainer.appendChild(humSettingsCard);
+        //         }
+
+        //         // Заполняем поля ввода текущими значениями
+        //         document.getElementById("maxHum").value = data.maxvlazh;
+        //         document.getElementById("minHum").value = data.minvlazh;
+            }
+async function fetchESP7TempSettings(){
+    const response = await fetch("/esp7/data");
+    const data = await response.json();
+const humContainer = document.getElementById("hum1");
                 let humSettingsCard =
                     document.getElementById("humSettingsCard");
                 if (!humSettingsCard) {
@@ -562,7 +829,109 @@
                 // Заполняем поля ввода текущими значениями
                 document.getElementById("maxHum").value = data.maxvlazh;
                 document.getElementById("minHum").value = data.minvlazh;
-            }
+}
+
+    //         async function fetchEsp6LightStatus() {
+    //             const response = await fetch("/light-statusDala");
+    //             const data = await response.json();
+    //             const devicesContainer = document.getElementById("esp6Data");
+    //             devicesContainer.innerHTML = ""; // Очищаем контейнер перед добавлением новых элементов
+
+    //             for (const [name, statusValue] of Object.entries(data)) {
+    //                 const currentStatus = statusValue === 1;
+    //                 const displayName = replaceName(name);
+
+    //                 const card = document.createElement("div");
+    //                 card.id = `card-${name}`;
+    //                 card.className = `cursor-pointer p-4 rounded-lg shadow-md overflow-hidden transition duration-150 ease-in-out ${
+    //                     currentStatus ? "bg-white" : "bg-gray-700 text-white"
+    //                 }`;
+    //                 card.onclick = function () {
+    //                     // Visual feedback for click
+    //                     card.classList.add("opacity-50");
+    //                     setTimeout(
+    //                         () => card.classList.remove("opacity-50"),
+    //                         200
+    //                     );
+    //                     // Toggle the light status
+    //                     toggleLightDala(name, !statusValue);
+    //                 };
+    //                 card.innerHTML = `
+    //     <div class="flex justify-between items-center">
+    //         <img src="/static/assets/lamp.png" class="w-8 h-8" >
+    //         <h5 class="text-lg font-semibold">${displayName}</h5>
+    //         <p class="status-text ${
+    //             currentStatus ? "text-green-500" : "text-red-500"
+    //         }">${currentStatus ? "On" : "Off"}</p>
+    //     </div>
+    // `;
+    //                 devicesContainer.appendChild(card);
+    //             }
+    //         }
+    //         async function toggleLightDala(name, currentStatus) {
+    //             const statusValue = currentStatus ? 1 : 0;
+    //             await fetch("/toggle-lightDala", {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({
+    //                     name: name,
+    //                     status: statusValue,
+    //                 }), // Send the inverted status
+    //             });
+    //             fetchEsp6LightStatus(); // Update the statuses after changing
+    //         }
+    //         async function fetchESP7Data() {
+    //             const response = await fetch("/esp7/data");
+    //             const data = await response.json();
+    //             const devicesContainer = document.getElementById("esp7Data");
+    //             devicesContainer.innerHTML = "";
+    //             // Создаем карточки для отображения данных ESP4
+    //             createCard(
+    //                 "Температура",
+    //                 `${data.temp}°C`,
+    //                 "temp",
+    //                 "/static/assets/temp.png",
+    //                 "esp7Data"
+    //             );
+    //             createCard(
+    //                 "Ылғалдылық",
+    //                 `${data.vlazh} %`,
+    //                 "vlazh",
+    //                 "/static/assets/humi.png",
+    //                 "esp7Data"
+    //             );
+    //             createCard(
+    //                 "Топырақ ылғалдылығы",
+    //                 `${data.datchikPochvy}`,
+    //                 "pochva",
+    //                 "/static/assets/soil.png",
+    //                 "esp7Data"
+    //             );
+
+    //             const humContainer = document.getElementById("hum1");
+    //             let humSettingsCard =
+    //                 document.getElementById("humSettingsCard");
+    //             if (!humSettingsCard) {
+    //                 humSettingsCard = document.createElement("div");
+    //                 humSettingsCard.id = "humSettingsCard";
+    //                 humSettingsCard.className = "card";
+    //                 humSettingsCard.innerHTML = `
+    //         <div class="card-body">
+    //             <h5 class="card-title">Ылғалдылық параметрлері</h5>
+    //             <input type="number" id="maxHum" placeholder="Максималды ылғалдылық" class="form-control my-2">
+    //             <input type="number" id="minHum" placeholder="Минималды ылғалдылық" class="form-control my-2">
+    //             <button onclick="setESP7Humidity()" class="btn btn-primary">Өзгерту</button>
+    //         </div>
+    //     `;
+    //                 humContainer.appendChild(humSettingsCard);
+    //             }
+
+    //             // Заполняем поля ввода текущими значениями
+    //             document.getElementById("maxHum").value = data.maxvlazh;
+    //             document.getElementById("minHum").value = data.minvlazh;
+    //         }
             async function setESP7Humidity() {
                 const maxHum = document.getElementById("maxHum").value;
                 const minHum = document.getElementById("minHum").value;
@@ -612,8 +981,13 @@
             window.onload = function () {
                 Promise.all([
                     fetchLightStatus(),
+                    // fetchLightStatu(),
                     fetchESP7Data(),
+                    fetchESP2Data(),  // Добавлено
+                    // updateEarlyWarningStatus(),  // Обновляем статус для "Ерте ескерту жүйесі"
                     fetchESP4Data(),
+                    fetchESP4TempSettings(),
+                    fetchESP7TempSettings(),
                     fetchESP5Data(),
                     fetchEsp6LightStatus(),
                 ]).finally(() => {
@@ -621,11 +995,22 @@
                     document.getElementById("loadingSpinner").style.display =
                         "none";
                 });
+                        // Обновляем данные каждые 2 секунд
             };
+//             window.onload = function () {
+//     fetchESP4TempSettings();
+// };
+            setInterval(fetchESP2Data, 1000);
+            // setInterval(updateEarlyWarningStatus, 2000);
+            setInterval(fetchESP4Data, 1000);
+            setInterval(fetchESP7Data, 1000);  // Обновляем данные с ESP7 каждые 2 сек
+            setInterval(fetchESP4TempSettings, 7000); 
+            setInterval(fetchESP7TempSettings, 7000); 
+
         </script>
         <!-- Bootstrap core JavaScript -->
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    </body>
+</body>
 </html>
